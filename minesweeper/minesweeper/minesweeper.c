@@ -35,13 +35,20 @@ int main(void) {
     printf("How many mines? ");
     int mine_count;
     scanf("%d", &mine_count);
-    for (int i; i < mine_count; ++i) {
-        int input;
-        scanf("%d", &input);
-    }
+    setbuf(stdin, NULL);
+
     // TODO: Scan in the number of pairs of mines.
 
     printf("Enter pairs:\n");
+
+    int i = 0;
+    for (i; i < mine_count; ++i) {
+        char input[50];
+        fgets(input, 50, stdin);
+        int row = (int)input[0] - 48;
+        int col = (int)input[2] - 48;
+        minefield[row][col] = HIDDEN_MINE;
+    }
 
     // TODO: Scan in the pairs of mines and place them on the grid.
 
@@ -80,4 +87,10 @@ void print_debug_minefield(int minefield[SIZE][SIZE]) {
         printf("\n");
         i++;
     }
+}
+
+void parse_input(char* input) {
+    int row = input[0];
+    int col = input[2];
+    return row, col;
 }
