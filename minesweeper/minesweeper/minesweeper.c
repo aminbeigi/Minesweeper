@@ -25,8 +25,6 @@
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 
-// Place your function prototyes here.
-
 int main(void) {
     int minefield[SIZE][SIZE];
     initialise_field(minefield);
@@ -37,23 +35,38 @@ int main(void) {
     scanf("%d", &mine_count);
     setbuf(stdin, NULL);
 
-    // TODO: Scan in the number of pairs of mines.
-
     printf("Enter pairs:\n");
 
     int i = 0;
     for (i; i < mine_count; ++i) {
         char input[50];
         fgets(input, 50, stdin);
-        int row = (int)input[0] - 48;
-        int col = (int)input[2] - 48;
+        int row = (int)input[0] - '0';
+        int col = (int)input[2] - '0';
         minefield[row][col] = HIDDEN_MINE;
     }
 
-    // TODO: Scan in the pairs of mines and place them on the grid.
-
     printf("Game Started\n");
-    print_debug_minefield(minefield);
+    // game loop
+    while (1) {
+        print_debug_minefield(minefield);
+        char input[55];
+        fgets(input, 55, stdin);
+        int command = (int)input[0] - '0';
+        
+        if (command == DETECT_ROW) {
+            int arg = (int)input[2] - '0';
+
+            int mine_count = 0;
+            int i = 0;
+            for (i; i < SIZE; ++i) {
+                if (minefield[arg-1][i] == 2) {
+                    ++mine_count;
+                }
+            }
+            printf("There are %d mines in row %d.\n", mine_count, arg);
+        }
+    }
 
     // TODO: Scan in commands to play the game until the game ends.
     // A game ends when the player wins, loses, or enters EOF (Ctrl+D).
@@ -87,10 +100,4 @@ void print_debug_minefield(int minefield[SIZE][SIZE]) {
         printf("\n");
         i++;
     }
-}
-
-void parse_input(char* input) {
-    int row = input[0];
-    int col = input[2];
-    return row, col;
 }
