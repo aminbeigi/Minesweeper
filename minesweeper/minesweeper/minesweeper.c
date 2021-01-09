@@ -43,6 +43,9 @@ int main(void) {
         fgets(input, 50, stdin);
         int row = (int)input[0] - '0';
         int col = (int)input[2] - '0';
+        if (row >= SIZE || col >= SIZE || row < 0 || col < 0) {
+            continue;
+        }
         minefield[row][col] = HIDDEN_MINE;
     }
 
