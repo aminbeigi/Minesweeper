@@ -23,8 +23,8 @@
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 int char_to_int(char c);
-void detect_row(int** minefield, char* input);
-void detect_col(int** minefield, char* input);
+void detect_row(int (*minefield)[SIZE], char* input);
+void detect_col(int (*minefield)[SIZE], char* input);
 
 int main(void) {
     int minefield[SIZE][SIZE];
@@ -130,7 +130,7 @@ int char_to_int(char c) {
     return c - '0';
 }
 
-void detect_row(int (*minefield)[8], char* input) {
+void detect_row(int (*minefield)[SIZE], char* input) {
     int row = char_to_int(input[2]); 
     int mine_count = 0;
 
@@ -144,7 +144,7 @@ void detect_row(int (*minefield)[8], char* input) {
 }
 
 
-void detect_col(int** minefield, char* input) {
+void detect_col(int (*minefield)[SIZE], char* input) {
     int col = char_to_int(input[2]);
     int mine_count = 0;
 
