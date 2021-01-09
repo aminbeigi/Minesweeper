@@ -66,6 +66,20 @@ int main(void) {
             }
             printf("There are %d mines in row %d.\n", mine_count, arg);
         }
+
+        if (command == DETECT_COL) {
+            int arg = (int)input[2] - '0';
+
+            int mine_count = 0;
+            int i = 0;
+            for (i; i < SIZE; ++i) {
+                if (minefield[i][arg-1] == 2) {
+                    ++mine_count;
+                }
+            }
+            printf("There are %d mines in column %d.\n", mine_count, arg);
+        }
+
     }
 
     // TODO: Scan in commands to play the game until the game ends.
