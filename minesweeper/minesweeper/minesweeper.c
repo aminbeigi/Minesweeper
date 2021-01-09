@@ -25,6 +25,7 @@ void print_debug_minefield(int minefield[SIZE][SIZE]);
 int char_to_int(char c);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
+void detect_square(int(*minefield)[SIZE], char* input);
 
 int main(void) {
     int minefield[SIZE][SIZE];
@@ -69,24 +70,7 @@ int main(void) {
         }
 
         if (command == DETECT_SQUARE) {
-            int row = (int)input[2] - '0';
-            int col = (int)input[4] - '0';
-            int size = (int)input[6] - '0';
-            
-            int mine_count = 0;
-            int square_row = row-1; // start in first coord in square
-            int square_col = col-1;
-            
-            int i = square_row;
-            for (i; i < square_row+size; ++i) {
-                int j = square_col;
-                for (j; j < square_col+size; ++j) {
-                    if (minefield[i][j] == HIDDEN_MINE) {
-                        ++mine_count;
-                    }
-                }
-            }
-            printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
+            detect_square(&minefield, &input);
         }
 
         if (command == REVEAL_SQUARE) {
@@ -155,4 +139,29 @@ void detect_col(int (*minefield)[SIZE], char* input) {
         }
     }
     printf("There are %d mine(s) in column %d.\n", mine_count, col);
+}
+
+void detect_square(int(*minefield)[SIZE], char* input) {
+    int row = char_to_int(input[2]);
+    int col = char_to_int(input[4]);
+    int size = char_to_int(input[6]);
+    
+    int mine_count = 0;
+    int square_row = row-1; // start in first coord in square
+    int square_col = col-1;
+    
+    int i = square_row;
+    for (i; i < square_row+size; ++i) {
+        int j = square_col;
+        for (j; j < square_col+size; ++j) {
+            if (*(*(minefield + i) + j) == HIDDEN_MINE) {
+                ++mine_count;
+            }
+        }
+    }
+    printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
+}
+
+void reveal_square() {
+
 }
