@@ -24,6 +24,7 @@ void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 int char_to_int(char c);
 void detect_row(int** minefield, char* input);
+void detect_col(int** minefield, char* input);
 
 int main(void) {
     int minefield[SIZE][SIZE];
@@ -43,8 +44,8 @@ int main(void) {
     for (i; i < mine_count; ++i) {
         char input[50];
         fgets(input, 50, stdin);
-        int row = (int)input[0] - '0';
-        int col = (int)input[2] - '0';
+        int row = char_to_int(input[0]);
+        int col = char_to_int(input[2]);
         if (row >= SIZE || col >= SIZE || row < 0 || col < 0) {
             continue;
         }
@@ -64,16 +65,7 @@ int main(void) {
         }
 
         if (command == DETECT_COL) {
-            int col = (int)input[2] - '0';
-
-            int mine_count = 0;
-            int row = 0;
-            for (row; row < SIZE; ++row) {
-                if (minefield[row][col] == HIDDEN_MINE) {
-                    ++mine_count;
-                }
-            }
-            printf("There are %d mine(s) in column %d.\n", mine_count, col);
+            detect_col(&minefield, &input);
         }
 
         if (command == DETECT_SQUARE) {
@@ -138,14 +130,29 @@ int char_to_int(char c) {
     return c - '0';
 }
 
-void detect_row(int** minefield, char* input) {
+void detect_row(int (*minefield)[8], char* input) {
     int row = char_to_int(input[2]); 
     int mine_count = 0;
+
     int col = 0;
     for (col; col < SIZE; ++col) {
-        if (*((minefield + row) + col) == HIDDEN_MINE) {
+        if (*(*(minefield + row) + col) == HIDDEN_MINE) {
             ++mine_count;
         }
     }
     printf("There are %d mine(s) in row %d.\n", mine_count, row);
+}
+
+
+void detect_col(int** minefield, char* input) {
+    int col = char_to_int(input[2]);
+    int mine_count = 0;
+
+    int row = 0;
+    for (row; row < SIZE; ++row) {
+        if (*(*(minefield + row) + col) == HIDDEN_MINE) {
+            ++mine_count;
+        }
+    }
+    printf("There are %d mine(s) in column %d.\n", mine_count, col);
 }
