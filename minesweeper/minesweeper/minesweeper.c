@@ -143,7 +143,7 @@ void detect_row(int** minefield, char* input) {
     int mine_count = 0;
     int col = 0;
     for (col; col < SIZE; ++col) {
-        if (minefield[row][col] == HIDDEN_MINE) {
+        if (*((minefield + row) + col) == HIDDEN_MINE) {
             ++mine_count;
         }
     }
