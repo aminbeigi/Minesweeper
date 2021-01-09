@@ -20,15 +20,13 @@
 #define DEBUG_MODE              6
 #define REVEAL_RADIAL           7
 
-#define _CRT_SECURE_NO_WARNINGS
-
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 
 int main(void) {
     int minefield[SIZE][SIZE];
     initialise_field(minefield);
-    printf("Welcome to minesweeper!\n");
+    printf("Welcome to mine sweeper!\n");
 
     printf("How many mines? ");
     int mine_count;
@@ -58,36 +56,52 @@ int main(void) {
         int command = (int)input[0] - '0';
         
         if (command == DETECT_ROW) {
-            int arg = (int)input[2] - '0';
+            int row = (int)input[2] - '0';
 
             int mine_count = 0;
-            int i = 0;
-            for (i; i < SIZE; ++i) {
-                if (minefield[arg-1][i] == 2) {
+            int col = 0;
+            for (col; col < SIZE; ++col) {
+                if (minefield[row][col] == 2) {
                     ++mine_count;
                 }
             }
-            printf("There are %d mines in row %d.\n", mine_count, arg);
+            printf("There are %d mine(s) in row %d.\n", mine_count, row);
         }
 
         if (command == DETECT_COL) {
-            int arg = (int)input[2] - '0';
+            int col = (int)input[2] - '0';
 
             int mine_count = 0;
-            int i = 0;
-            for (i; i < SIZE; ++i) {
-                if (minefield[i][arg-1] == 2) {
+            int row = 0;
+            for (row; row < SIZE; ++row) {
+                if (minefield[row][col] == HIDDEN_MINE) {
                     ++mine_count;
                 }
             }
-            printf("There are %d mines in column %d.\n", mine_count, arg);
+            printf("There are %d mine(s) in column %d.\n", mine_count, col);
         }
 
+        if (command == DETECT_SQUARE) {
+            int row = (int)input[2] - '0';
+            int col = (int)input[4] - '0';
+            int size = (int)input[6] - '0';
+            
+            int mine_count = 0;
+            int square_row = row-1; // start in first coord in square
+            int square_col = col-1;
+            
+            int i = square_row;
+            for (i; i < square_row+size; ++i) {
+                int j = square_col;
+                for (j; j < square_col+size; ++j) {
+                    if (minefield[i][j] == HIDDEN_MINE) {
+                        ++mine_count;
+                    }
+                }
+            }
+            printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
+        }
     }
-
-    // TODO: Scan in commands to play the game until the game ends.
-    // A game ends when the player wins, loses, or enters EOF (Ctrl+D).
-    // You should display the minefield after each command has been processed.
 
     return 0;
 }
