@@ -22,6 +22,8 @@
 
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
+int char_to_int(char c);
+void detect_row(int** minefield, char* input);
 
 int main(void) {
     int minefield[SIZE][SIZE];
@@ -34,7 +36,7 @@ int main(void) {
     setbuf(stdin, NULL);
 
     if (mine_count != 0) {
-    printf("Enter pairs:\n");
+        printf("Enter pairs:\n");
     }
 
     int i = 0;
@@ -55,19 +57,10 @@ int main(void) {
         print_debug_minefield(minefield);
         char input[55];
         fgets(input, 55, stdin);
-        int command = (int)input[0] - '0';
+        int command = char_to_int(input[0]);
         
         if (command == DETECT_ROW) {
-            int row = (int)input[2] - '0';
-
-            int mine_count = 0;
-            int col = 0;
-            for (col; col < SIZE; ++col) {
-                if (minefield[row][col] == 2) {
-                    ++mine_count;
-                }
-            }
-            printf("There are %d mine(s) in row %d.\n", mine_count, row);
+            detect_row(&minefield, &input);
         }
 
         if (command == DETECT_COL) {
@@ -103,12 +96,18 @@ int main(void) {
             }
             printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
         }
+
+        if (command == REVEAL_SQUARE) {
+            int row = (int)input[2] - '0';
+            int col = (int)input[4] - '0';
+
+        }
     }
 
     return 0;
 }
 
-// Set the entire minefield to HIDDEN_SAFE.
+// set the entire minefield to HIDDEN_SAFE.
 void initialise_field(int minefield[SIZE][SIZE]) {
     int i = 0;
     while (i < SIZE) {
@@ -121,7 +120,7 @@ void initialise_field(int minefield[SIZE][SIZE]) {
     }
 }
 
-// Print out the actual values of the minefield.
+// print out the actual values of the minefield.
 void print_debug_minefield(int minefield[SIZE][SIZE]) {
     int i = 0;
     while (i < SIZE) {
@@ -133,4 +132,20 @@ void print_debug_minefield(int minefield[SIZE][SIZE]) {
         printf("\n");
         i++;
     }
+}
+
+int char_to_int(char c) {
+    return c - '0';
+}
+
+void detect_row(int** minefield, char* input) {
+    int row = char_to_int(input[2]); 
+    int mine_count = 0;
+    int col = 0;
+    for (col; col < SIZE; ++col) {
+        if (minefield[row][col] == HIDDEN_MINE) {
+            ++mine_count;
+        }
+    }
+    printf("There are %d mine(s) in row %d.\n", mine_count, row);
 }
