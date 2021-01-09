@@ -33,7 +33,9 @@ int main(void) {
     scanf("%d", &mine_count);
     setbuf(stdin, NULL);
 
+    if (mine_count != 0) {
     printf("Enter pairs:\n");
+    }
 
     int i = 0;
     for (i; i < mine_count; ++i) {
