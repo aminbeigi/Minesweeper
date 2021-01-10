@@ -122,6 +122,24 @@ int in_minefield(int row, int col) {
     return 1;
 }
 
+void iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
+    int square_row = row-1; // start in first coord in top left square
+    int square_col = col-1;
+    int mine[64][64];
+    int i = square_row;
+    for (i; i < square_row+size; ++i) {
+        int j = square_col;
+        for (j; j < square_col+size; ++j) {
+            if (!(in_minefield(square_row, square_col))) {
+                continue;
+            }
+            if (*(*(minefield + i) + j) == HIDDEN_MINE) {
+                ++mine_count;
+            }
+        }
+    }
+}
+
 void detect_row(int (*minefield)[SIZE], char* input) {
     int row = char_to_int(input[2]); 
     int mine_count = 0;
