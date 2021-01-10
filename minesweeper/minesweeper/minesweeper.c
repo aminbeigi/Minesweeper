@@ -20,10 +20,17 @@
 #define DEBUG_MODE              6
 #define REVEAL_RADIAL           7
 
+typedef struct node {
+    int row;
+    int col;
+    struct node* next;
+} node;
+
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 int char_to_int(char c);
 int in_minefield(int row, int col);
+void append(node* head, int row, int col);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
 void detect_square(int(*minefield)[SIZE], char* input);
@@ -122,22 +129,38 @@ int in_minefield(int row, int col) {
     return 1;
 }
 
-void iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
-    int square_row = row-1; // start in first coord in top left square
-    int square_col = col-1;
-    int mine[64][64];
-    int i = square_row;
-    for (i; i < square_row+size; ++i) {
-        int j = square_col;
-        for (j; j < square_col+size; ++j) {
-            if (!(in_minefield(square_row, square_col))) {
+void append(node* head, int row, int col) {
+    node* current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = (node*) malloc(sizeof(node*));
+    current->next->row = row;
+    current->next->col = col;
+    current->next->next = NULL;
+}
+
+// return mines coordinates in linked list
+node* iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
+    int row = row - 1; // start in first coord in top left square
+    int col = col - 1;
+
+    // create linked list
+    node* head = NULL;
+
+    int i = row;
+    for (i; i < row+size; ++i) {
+        int j = col;
+        for (j; j < col+size; ++j) {
+            if (!(in_minefield(row, col))) {
                 continue;
             }
             if (*(*(minefield + i) + j) == HIDDEN_MINE) {
-                ++mine_count;
+                append(head, i, j);
             }
         }
     }
+    return head;
 }
 
 void detect_row(int (*minefield)[SIZE], char* input) {
