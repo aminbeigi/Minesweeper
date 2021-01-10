@@ -23,6 +23,7 @@
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 int char_to_int(char c);
+int in_minefield(int row, int col);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
 void detect_square(int(*minefield)[SIZE], char* input);
@@ -47,7 +48,7 @@ int main(void) {
         fgets(input, 50, stdin);
         int row = char_to_int(input[0]);
         int col = char_to_int(input[2]);
-        if (row >= SIZE || col >= SIZE || row < 0 || col < 0) {
+        if (!(in_minefield(row, col))) {
             continue;
         }
         minefield[row][col] = HIDDEN_MINE;
@@ -114,6 +115,13 @@ int char_to_int(char c) {
     return c - '0';
 }
 
+int in_minefield(int row, int col) {
+    if (row >= SIZE || col >= SIZE || row < 0 || col < 0) {
+        return 0;
+    }
+    return 1;
+}
+
 void detect_row(int (*minefield)[SIZE], char* input) {
     int row = char_to_int(input[2]); 
     int mine_count = 0;
@@ -154,6 +162,9 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     for (i; i < square_row+size; ++i) {
         int j = square_col;
         for (j; j < square_col+size; ++j) {
+            if (!(in_minefield(square_row, square_col))) {
+                continue;
+            }
             if (*(*(minefield + i) + j) == HIDDEN_MINE) {
                 ++mine_count;
             }
@@ -162,6 +173,6 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
 }
 
-void reveal_square() {
+void reveal_square(int(*minefield)[SIZE], char* input) {
 
 }
