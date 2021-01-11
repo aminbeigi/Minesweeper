@@ -166,6 +166,7 @@ void print_gameplay_minefield(int (*minefield)[SIZE]) {
             }
             if (value == 1 || value == 2) {
                 printf("## ");
+    
             }
         }
         printf("\n");
