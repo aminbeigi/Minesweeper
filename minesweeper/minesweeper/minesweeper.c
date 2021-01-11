@@ -150,8 +150,9 @@ void print_debug_minefield(int (*minefield)[SIZE]) {
 
 // print hidden values of the minefield.
 void print_gameplay_minefield(int (*minefield)[SIZE]) {
-    char* header_row = "00 01 02 03 04 05 06 07";
-    char* horizontal_border = "-------------------------";
+    // TODO: add variables (pre-processor directives?) here too cryptic
+    char* header_row = "    00 01 02 03 04 05 06 07";
+    char* horizontal_border = "    -------------------------";
     int value;
 
     printf("%s\n%s\n", header_row, horizontal_border);
@@ -159,6 +160,7 @@ void print_gameplay_minefield(int (*minefield)[SIZE]) {
     int row = 0;
     for (row; row < SIZE; ++row) {
         int col = 0;
+        printf("0%d |", row);
         for (col; col < SIZE; ++col) {
             value = (*(*(minefield + row) + col));
             if (value == 0) {
@@ -169,7 +171,7 @@ void print_gameplay_minefield(int (*minefield)[SIZE]) {
     
             }
         }
-        printf("\n");
+        printf("|\n");
     }
     printf("%s\n", horizontal_border);
 }
