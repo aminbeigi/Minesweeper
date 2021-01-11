@@ -23,14 +23,15 @@
 typedef struct node {
     int row;
     int col;
-    struct node* next;
+    struct node *next;
 } node;
 
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 int char_to_int(char c);
 int in_minefield(int row, int col);
-void append(node* head, int row, int col);
+void append(node *head, int row, int col);
+node* iterate_sqaure(int(*minefield)[SIZE], int row, int col, int size);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
 void detect_square(int(*minefield)[SIZE], char* input);
@@ -129,12 +130,18 @@ int in_minefield(int row, int col) {
     return 1;
 }
 
-void append(node* head, int row, int col) {
-    node* current = head;
+void append(node *head, int row, int col) {
+    node *current = head;
     while (current->next != NULL) {
         current = current->next;
     }
+
     current->next = (node*) malloc(sizeof(node*));
+    
+    if (current->next == NULL) {
+        return 1;
+    }
+
     current->next->row = row;
     current->next->col = col;
     current->next->next = NULL;
@@ -142,11 +149,12 @@ void append(node* head, int row, int col) {
 
 // return mines coordinates in linked list
 node* iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
-    int row = row - 1; // start in first coord in top left square
-    int col = col - 1;
+    // TODO: make first coord relative to size
+    row -= 1; // start in first coord in top left square
+    col -= 1;
 
     // create linked list
-    node* head = NULL;
+    node *head = NULL;
 
     int i = row;
     for (i; i < row+size; ++i) {
@@ -176,7 +184,6 @@ void detect_row(int (*minefield)[SIZE], char* input) {
     printf("There are %d mine(s) in row %d.\n", mine_count, row);
 }
 
-
 void detect_col(int (*minefield)[SIZE], char* input) {
     int col = char_to_int(input[2]);
     int mine_count = 0;
@@ -194,23 +201,12 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
     int size = char_to_int(input[6]);
-    
+
     int mine_count = 0;
-    int square_row = row-1; // start in first coord in square
-    int square_col = col-1;
-    
-    int i = square_row;
-    for (i; i < square_row+size; ++i) {
-        int j = square_col;
-        for (j; j < square_col+size; ++j) {
-            if (!(in_minefield(square_row, square_col))) {
-                continue;
-            }
-            if (*(*(minefield + i) + j) == HIDDEN_MINE) {
-                ++mine_count;
-            }
-        }
-    }
+
+    node* head = iterate_sqaure(minefield, row, col, size);
+    printf("%d\n", head);
+
     printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
 }
 
