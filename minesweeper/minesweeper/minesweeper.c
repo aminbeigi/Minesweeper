@@ -28,11 +28,12 @@ typedef struct node {
 
 void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int(*minefield)[SIZE]);
+void print_gameplay_minefield(int(*minefield)[SIZE]);
 int char_to_int(char c);
 int in_minefield(int row, int col);
 void append(node **head, int row, int col);
-int list_length(node* head);
-int row_col_in_list(node* head, int row, int col);
+int list_length(node *head);
+int row_col_in_list(node *head, int row, int col);
 node* iterate_sqaure(int(*minefield)[SIZE], int row, int col, int size);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
@@ -70,8 +71,15 @@ int main(void) {
 
     printf("Game Started\n");
     // game loop
+    
+    int in_gameplay_mode = 0;
     while (1) {
-        print_debug_minefield(&minefield);
+        if (in_gameplay_mode) {
+            print_gameplay_minefield(&minefield);
+        } else {
+            print_debug_minefield(&minefield);
+        }
+
         // TODO: don't use 55
         char input[55];
         fgets(input, 55, stdin);
@@ -99,6 +107,14 @@ int main(void) {
 
         if (command == REVEAL_SQUARE) {
             reveal_square(&minefield, &input);
+        }
+
+        if (command == GAMEPLAY_MODE) {
+            in_gameplay_mode = 1;
+        }
+
+        if (command == DEBUG_MODE) {
+            in_gameplay_mode = 0;
         }
     }
 
@@ -130,6 +146,31 @@ void print_debug_minefield(int (*minefield)[SIZE]) {
         printf("\n");
         row++;
     }
+}
+
+// print hidden values of the minefield.
+void print_gameplay_minefield(int (*minefield)[SIZE]) {
+    char* header_row = "00 01 02 03 04 05 06 07";
+    char* horizontal_border = "-------------------------";
+    int value;
+
+    printf("%s\n%s\n", header_row, horizontal_border);
+    
+    int row = 0;
+    for (row; row < SIZE; ++row) {
+        int col = 0;
+        for (col; col < SIZE; ++col) {
+            value = (*(*(minefield + row) + col));
+            if (value == 0) {
+                printf("   ");
+            }
+            if (value == 1 || value == 2) {
+                printf("## ");
+            }
+        }
+        printf("\n");
+    }
+    printf("%s\n", horizontal_border);
 }
 
 int char_to_int(char c) {
@@ -170,8 +211,8 @@ void append(node **head, int row, int col) {
     }
 }
 
-int list_length(node* head) {
-    node* current = head;
+int list_length(node *head) {
+    node *current = head;
     if (current == NULL) {
         return 0;
     }
@@ -184,8 +225,8 @@ int list_length(node* head) {
     return count;
 }
 
-int row_col_in_list(node* head, int row, int col) {
-    node* current = head;
+int row_col_in_list(node *head, int row, int col) {
+    node *current = head;
     if (current == NULL) {
         return 0;
     }
@@ -254,7 +295,7 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     int col = char_to_int(input[4]);
     int size = char_to_int(input[6]);
 
-    node* head = iterate_sqaure(minefield, row, col, size);
+    node *head = iterate_sqaure(minefield, row, col, size);
     int mine_count = list_length(head);
     
     printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
@@ -267,7 +308,7 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
     int col = char_to_int(input[4]);
     int size = 3;
 
-    node* head = iterate_sqaure(minefield, row, col, size);
+    node *head = iterate_sqaure(minefield, row, col, size);
     int mine_count = list_length(head);
 
     // player selects mine
