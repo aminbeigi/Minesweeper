@@ -41,6 +41,9 @@ void reveal_square(int(*minefield)[SIZE], char* input);
 
 int main(void) {
     int minefield[SIZE][SIZE];
+    int hints_remaining = 3;
+    char* out_of_hints_message = "Help already used";
+
     initialise_field(minefield);
     printf("Welcome to mine sweeper!\n");
 
@@ -74,16 +77,24 @@ int main(void) {
         fgets(input, 55, stdin);
         int command = char_to_int(input[0]);
         
+        if (hints_remaining == 0 && (command == DETECT_ROW || command == DETECT_COL || command == DETECT_SQUARE)) {
+            printf("%s\n", out_of_hints_message);
+            continue;
+        }
+
         if (command == DETECT_ROW) {
             detect_row(&minefield, &input);
+            --hints_remaining;
         }
 
         if (command == DETECT_COL) {
             detect_col(&minefield, &input);
+            --hints_remaining;
         }
 
         if (command == DETECT_SQUARE) {
             detect_square(&minefield, &input);
+            --hints_remaining;
         }
 
         if (command == REVEAL_SQUARE) {
@@ -247,9 +258,11 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     int mine_count = list_length(head);
     
     printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
+    free(head);
 }
 
 void reveal_square(int(*minefield)[SIZE], char* input) {
+    // TODO: add win condition
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
     int size = 3;
@@ -278,5 +291,8 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
                 (*(*(minefield + i) + j)) = VISIBLE_SAFE;
             }
         }
+    } else {
+        (*(*(minefield + row) + col)) = VISIBLE_SAFE;
     }
+    free(head);
 } 
