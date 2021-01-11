@@ -32,9 +32,9 @@ void print_gameplay_minefield(int(*minefield)[SIZE]);
 int char_to_int(char c);
 int in_minefield(int row, int col);
 void append(node **head, int row, int col);
-int list_length(node *head);
+int list_size(node *head);
 int row_col_in_list(node *head, int row, int col);
-node* iterate_sqaure(int(*minefield)[SIZE], int row, int col, int size);
+node* iterate_sqaure(int(*minefield)[SIZE], int row, int col);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
 void detect_square(int(*minefield)[SIZE], char* input);
@@ -152,8 +152,9 @@ void print_debug_minefield(int (*minefield)[SIZE]) {
 void print_gameplay_minefield(int (*minefield)[SIZE]) {
     // TODO: add variables (pre-processor directives?) here too cryptic
     char* header_row = "    00 01 02 03 04 05 06 07";
-    char* horizontal_border = "    -------------------------";
+    char* horizontal_border = "   -------------------------";
     int value;
+    int mine_count;
 
     printf("%s\n%s\n", header_row, horizontal_border);
     
@@ -163,10 +164,16 @@ void print_gameplay_minefield(int (*minefield)[SIZE]) {
         printf("0%d |", row);
         for (col; col < SIZE; ++col) {
             value = (*(*(minefield + row) + col));
-            if (value == 0) {
-                printf("   ");
+            if (value == VISIBLE_SAFE) {
+                node *head = iterate_sqaure(minefield, row, col);
+                mine_count = list_size(head);
+                if (mine_count == 0) {
+                    printf("   ");
+                } else {
+                    printf("0%d ", mine_count);
+                }
             }
-            if (value == 1 || value == 2) {
+            if (value == HIDDEN_SAFE || value == HIDDEN_MINE) {
                 printf("## ");
     
             }
@@ -214,7 +221,7 @@ void append(node **head, int row, int col) {
     }
 }
 
-int list_length(node *head) {
+int list_size(node *head) {
     node *current = head;
     if (current == NULL) {
         return 0;
@@ -244,10 +251,10 @@ int row_col_in_list(node *head, int row, int col) {
 }
 
 // return row and column of mines in linked list
-node* iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
-    // TODO: allow sizes other than 3 
+node* iterate_sqaure(int (*minefield)[SIZE], int row, int col) {
     row -= 1; // start in first coord in top left square
     col -= 1;
+    int size = 3;
 
     // create linked list
     node *head = NULL;
@@ -296,12 +303,11 @@ void detect_col(int (*minefield)[SIZE], char* input) {
 void detect_square(int(*minefield)[SIZE], char* input) {
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
-    int size = char_to_int(input[6]);
 
-    node *head = iterate_sqaure(minefield, row, col, size);
-    int mine_count = list_length(head);
+    node *head = iterate_sqaure(minefield, row, col);
+    int mine_count = list_size(head);
     
-    printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
+    printf("There are %d mine(s) in the square centered at row %d, column %d, of size 3\n", mine_count, row, col);
     free(head);
 }
 
@@ -311,8 +317,8 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
     int col = char_to_int(input[4]);
     int size = 3;
 
-    node *head = iterate_sqaure(minefield, row, col, size);
-    int mine_count = list_length(head);
+    node *head = iterate_sqaure(minefield, row, col);
+    int mine_count = list_size(head);
 
     // player selects mine
     if (row_col_in_list(head, row, col)) {
@@ -322,8 +328,10 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
     }
 
     if (mine_count == 0) {
-        row -= 1; // start in first coord in top left square
-        col -= 1;
+        if (row != 0 || col != 0) {
+            row -= 1; // start in first coord in top left square
+            col -= 1;
+        }
 
         int i = row;
         for (i; i < row+size; ++i) {
