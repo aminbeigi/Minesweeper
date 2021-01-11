@@ -27,14 +27,17 @@ typedef struct node {
 } node;
 
 void initialise_field(int minefield[SIZE][SIZE]);
-void print_debug_minefield(int minefield[SIZE][SIZE]);
+void print_debug_minefield(int(*minefield)[SIZE]);
 int char_to_int(char c);
 int in_minefield(int row, int col);
 void append(node **head, int row, int col);
+int list_length(node* head);
+int row_col_in_list(node* head, int row, int col);
 node* iterate_sqaure(int(*minefield)[SIZE], int row, int col, int size);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
 void detect_square(int(*minefield)[SIZE], char* input);
+void reveal_square(int(*minefield)[SIZE], char* input);
 
 int main(void) {
     int minefield[SIZE][SIZE];
@@ -65,7 +68,8 @@ int main(void) {
     printf("Game Started\n");
     // game loop
     while (1) {
-        print_debug_minefield(minefield);
+        print_debug_minefield(&minefield);
+        // TODO: don't use 55
         char input[55];
         fgets(input, 55, stdin);
         int command = char_to_int(input[0]);
@@ -83,9 +87,7 @@ int main(void) {
         }
 
         if (command == REVEAL_SQUARE) {
-            int row = (int)input[2] - '0';
-            int col = (int)input[4] - '0';
-
+            reveal_square(&minefield, &input);
         }
     }
 
@@ -106,16 +108,16 @@ void initialise_field(int minefield[SIZE][SIZE]) {
 }
 
 // print out the actual values of the minefield.
-void print_debug_minefield(int minefield[SIZE][SIZE]) {
-    int i = 0;
-    while (i < SIZE) {
-        int j = 0;
-        while (j < SIZE) {
-            printf("%d ", minefield[i][j]);
-            j++;
+void print_debug_minefield(int (*minefield)[SIZE]) {
+    int row = 0;
+    while (row < SIZE) {
+        int col = 0;
+        while (col < SIZE) {
+            printf("%d ", (*(*(minefield + row) + col)));
+            col++;
         }
         printf("\n");
-        i++;
+        row++;
     }
 }
 
@@ -157,9 +159,38 @@ void append(node **head, int row, int col) {
     }
 }
 
+int list_length(node* head) {
+    node* current = head;
+    if (current == NULL) {
+        return 0;
+    }
+    
+    int count = 1;
+    while (current->next != NULL) {
+        current = current->next;
+        ++count;
+    }
+    return count;
+}
+
+int row_col_in_list(node* head, int row, int col) {
+    node* current = head;
+    if (current == NULL) {
+        return 0;
+    }
+    
+    while (current != NULL) {
+        if (current->row == row && current->col == col) {
+            return 1;
+        }
+        current = current->next;
+    }
+    return 0;
+}
+
 // return row and column of mines in linked list
 node* iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
-    // TODO: make first coord relative to size
+    // TODO: allow sizes other than 3 
     row -= 1; // start in first coord in top left square
     col -= 1;
 
@@ -212,14 +243,40 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     int col = char_to_int(input[4]);
     int size = char_to_int(input[6]);
 
-    int mine_count = 0;
-
     node* head = iterate_sqaure(minefield, row, col, size);
-    printf("%d\n", head->row);
-
+    int mine_count = list_length(head);
+    
     printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
 }
 
 void reveal_square(int(*minefield)[SIZE], char* input) {
+    int row = char_to_int(input[2]);
+    int col = char_to_int(input[4]);
+    int size = 3;
 
-}
+    node* head = iterate_sqaure(minefield, row, col, size);
+    int mine_count = list_length(head);
+
+    // player selects mine
+    if (row_col_in_list(head, row, col)) {
+        print_debug_minefield(minefield);
+        printf("Game over");
+        exit(0);
+    }
+
+    if (mine_count == 0) {
+        row -= 1; // start in first coord in top left square
+        col -= 1;
+
+        int i = row;
+        for (i; i < row+size; ++i) {
+            int j = col;
+            for (j; j < col+size; ++j) {
+                if (!(in_minefield(row, col))) {
+                    continue;
+                }
+                (*(*(minefield + i) + j)) = VISIBLE_SAFE;
+            }
+        }
+    }
+} 
