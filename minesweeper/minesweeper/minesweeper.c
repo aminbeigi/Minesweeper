@@ -30,7 +30,7 @@ void initialise_field(int minefield[SIZE][SIZE]);
 void print_debug_minefield(int minefield[SIZE][SIZE]);
 int char_to_int(char c);
 int in_minefield(int row, int col);
-void append(node *head, int row, int col);
+void append(node **head, int row, int col);
 node* iterate_sqaure(int(*minefield)[SIZE], int row, int col, int size);
 void detect_row(int (*minefield)[SIZE], char* input);
 void detect_col(int (*minefield)[SIZE], char* input);
@@ -130,24 +130,34 @@ int in_minefield(int row, int col) {
     return 1;
 }
 
-void append(node *head, int row, int col) {
-    node *current = head;
-    while (current->next != NULL) {
-        current = current->next;
-    }
-
-    current->next = (node*) malloc(sizeof(node*));
+void append(node **head, int row, int col) {
+    node *new_node = (node*)malloc(sizeof(node));
     
-    if (current->next == NULL) {
-        return 1;
+    if (new_node == NULL) {
+        fprintf(stderr, "Unable to allocate memory for new node\n");
+        exit(-1);
     }
 
-    current->next->row = row;
-    current->next->col = col;
-    current->next->next = NULL;
+    new_node->row = row;
+    new_node->col = col;
+    new_node->next = NULL;
+
+    // check for first iteration
+    if (*head == NULL) {
+        *head = new_node;
+    } else {
+        node* current = *head;
+
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        
+        current->next = new_node;
+        current->next->next = NULL;
+    }
 }
 
-// return mines coordinates in linked list
+// return row and column of mines in linked list
 node* iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
     // TODO: make first coord relative to size
     row -= 1; // start in first coord in top left square
@@ -164,7 +174,7 @@ node* iterate_sqaure(int (*minefield)[SIZE], int row, int col, int size) {
                 continue;
             }
             if (*(*(minefield + i) + j) == HIDDEN_MINE) {
-                append(head, i, j);
+                append(&head, i, j);
             }
         }
     }
@@ -205,7 +215,7 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     int mine_count = 0;
 
     node* head = iterate_sqaure(minefield, row, col, size);
-    printf("%d\n", head);
+    printf("%d\n", head->row);
 
     printf("There are %d mine(s) in the square centered at row %d, column %d, of size %d\n", mine_count, row, col, size);
 }
