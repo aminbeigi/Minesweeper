@@ -430,8 +430,18 @@ void reveal_radial(int(*minefield)[SIZE], char* input) {
     typedef struct {
         int row;
         int col;
-    } RadialDir;
-    RadialDir radial_dirs[2][2];
+    } RadialDirection;
+
+    RadialDirection degree_0 = {0, 1};
+    RadialDirection degree_45 = {1, 1};
+    RadialDirection degree_90 = {0, 1};
+    RadialDirection degree_135 = {1, 1};
+    RadialDirection degree_180 = {1, 1};
+    RadialDirection degree_225 = {1, 1};
+    RadialDirection degree_270 = {1, 1};
+    RadialDirection degree_315 = {1, 1};
+
+    RadialDirection radial_dirs[] = { degree_0, degree_45 };
     node *head = iterate_square(minefield, row, col);
     int mine_count = list_size(head);
 
