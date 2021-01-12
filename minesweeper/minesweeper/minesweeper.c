@@ -115,10 +115,14 @@ int main(void) {
 
         if (command == GAMEPLAY_MODE) {
             in_gameplay_mode = 1;
+            printf("Gameplay mode activated\n");
+            printf("..\n");
+            printf("\\/\n");
         }
 
         if (command == DEBUG_MODE) {
             in_gameplay_mode = 0;
+            printf("Debug mode activated\n");
         }
     }
 
@@ -344,7 +348,9 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
     // player selects mine
     if (row_col_in_list(head, row, col)) {
         print_debug_minefield(minefield);
-        printf("Game over");
+        printf("Game over\n");
+        printf("xx\n");
+        printf("/\\\n");
         exit(0);
     }
 
