@@ -328,16 +328,14 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
     }
 
     if (mine_count == 0) {
-        if (row != 0 || col != 0) {
-            row -= 1; // start in first coord in top left square
-            col -= 1;
-        }
+       row -= 1; // start in first coord in top left square
+       col -= 1;
 
         int i = row;
         for (i; i < row+size; ++i) {
             int j = col;
             for (j; j < col+size; ++j) {
-                if (!(in_minefield(row, col))) {
+                if (!(in_minefield(i, j))) {
                     continue;
                 }
                 (*(*(minefield + i) + j)) = VISIBLE_SAFE;
