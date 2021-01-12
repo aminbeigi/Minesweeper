@@ -52,10 +52,18 @@ int main(void) {
 
     initialise_field(minefield);
     printf("Welcome to mine sweeper!\n");
-
     printf("How many mines? ");
+
     int mine_count;
-    scanf("%d", &mine_count);
+    while (1) {
+        scanf("%d", &mine_count);
+        if (mine_count < 0 || mine_count > 64) {
+            printf("Mine count must be greater than 0 and less than 64\n");
+            continue;
+        }
+        break;
+    }
+
     setbuf(stdin, NULL);
 
     if (mine_count != 0) {
