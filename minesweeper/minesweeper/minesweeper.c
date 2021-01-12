@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+// TODO: invalid input checking
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -190,7 +192,7 @@ void print_debug_minefield(int (*minefield)[SIZE]) {
 void print_gameplay_minefield(int (*minefield)[SIZE], int game_lost) {
     char* header_row = "    00 01 02 03 04 05 06 07";
     char* horizontal_border = "   --------------------------";
-    char* empty_square = "  ";
+    char* empty_square = "   ";
     int value;
     int mine_count;
 
@@ -392,14 +394,21 @@ void reveal_radial(int(*minefield)[SIZE], char* input) {
     int size = 3;
 
     reveal_square(minefield, input);
-      
+    
+    node *head = iterate_square(minefield, row, col);
+    int mine_count = list_size(head);
+
+    if (mine_count != 0) {
+        return;
+    }
+
     typedef struct {
         int row;
         int col;
     } RadialDirection;
 
     RadialDirection degree_0 = {-1, 0};
-    RadialDirection degree_45 = {1, 1};
+    RadialDirection degree_45 = {-1, -1};
     RadialDirection degree_90 = {0, 1};
     RadialDirection degree_135 = {1, 1};
     RadialDirection degree_180 = {1, 1};
@@ -407,19 +416,27 @@ void reveal_radial(int(*minefield)[SIZE], char* input) {
     RadialDirection degree_270 = {1, 1};
     RadialDirection degree_315 = {1, 1};
 
-    RadialDirection radial_dirs[] = { degree_0, degree_45 };
-    size_t array_size = sizeof(radial_dirs) / sizeof(RadialDirection);
-    
+    RadialDirection radial_directions[] = { degree_0, degree_45 };
+    size_t array_size = sizeof(radial_directions) / sizeof(RadialDirection);
+
+    // TODO: is it better to initialise row and col here?
     int i = 0;
     for (i; i < array_size; ++i) {
+        RadialDirection direction = radial_directions[i];
+        int radial_row = row;
+        int radial_col = col;
+        while (in_minefield(radial_row, radial_col)) {
+            node *head = iterate_square(minefield, radial_row, radial_col);
+            int mine_count = list_size(head);
+
+            (*(*(minefield + radial_row) + radial_col)) = VISIBLE_SAFE;
+            if (mine_count != 0) {
+                break;
+            }
+
+            radial_row += direction.row;
+            radial_col += direction.col;
+        }
+
     }
-
-    node *head = iterate_square(minefield, row, col);
-    int mine_count = list_size(head);
-
-    // player selects mine
-    if (row_col_in_list(head, row, col)) {
-        game_over(minefield);
-    }
-
 } 
