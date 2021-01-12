@@ -27,6 +27,7 @@ typedef struct node {
 } node;
 
 void initialise_field(int minefield[SIZE][SIZE]);
+int game_is_won(int(*minefield)[SIZE]);
 void print_debug_minefield(int(*minefield)[SIZE]);
 void print_gameplay_minefield(int(*minefield)[SIZE]);
 int char_to_int(char c);
@@ -35,8 +36,8 @@ void append(node **head, int row, int col);
 int list_size(node *head);
 int row_col_in_list(node *head, int row, int col);
 node* iterate_sqaure(int(*minefield)[SIZE], int row, int col);
-void detect_row(int (*minefield)[SIZE], char* input);
-void detect_col(int (*minefield)[SIZE], char* input);
+void detect_row(int(*minefield)[SIZE], char* input);
+void detect_col(int(*minefield)[SIZE], char* input);
 void detect_square(int(*minefield)[SIZE], char* input);
 void reveal_square(int(*minefield)[SIZE], char* input);
 
@@ -70,14 +71,17 @@ int main(void) {
     }
 
     printf("Game Started\n");
-    // game loop
-    
     int in_gameplay_mode = 0;
+    // game loop
     while (1) {
         if (in_gameplay_mode) {
             print_gameplay_minefield(&minefield);
         } else {
             print_debug_minefield(&minefield);
+        }
+
+        if (game_is_won(&minefield)) {
+            exit(0);
         }
 
         // TODO: don't use 55
@@ -132,6 +136,23 @@ void initialise_field(int minefield[SIZE][SIZE]) {
         }
         i++;
     }
+}
+
+int game_is_won(int (*minefield)[SIZE]) {
+    int value;
+
+    int row = 0;
+    for (row; row < SIZE; ++row) {
+        int col = 0;
+        for (col; col < SIZE; ++col) {
+            value = (*(*(minefield + row) + col));
+            if (value == HIDDEN_SAFE) {
+                return 0;
+            }
+        }
+    }
+    printf("Game won!\n");
+    return 1;
 }
 
 // print out the actual values of the minefield.
