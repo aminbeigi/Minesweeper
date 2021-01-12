@@ -29,7 +29,7 @@ typedef struct node {
 void initialise_field(int minefield[SIZE][SIZE]);
 int game_is_won(int(*minefield)[SIZE]);
 void print_debug_minefield(int(*minefield)[SIZE]);
-void print_gameplay_minefield(int(*minefield)[SIZE]);
+void print_gameplay_minefield(int(*minefield)[SIZE], int game_lost);
 int char_to_int(char c);
 int in_minefield(int row, int col);
 void append(node **head, int row, int col);
@@ -75,7 +75,7 @@ int main(void) {
     // game loop
     while (1) {
         if (in_gameplay_mode) {
-            print_gameplay_minefield(&minefield);
+            print_gameplay_minefield(&minefield, 0);
         } else {
             print_debug_minefield(&minefield);
         }
@@ -174,10 +174,10 @@ void print_debug_minefield(int (*minefield)[SIZE]) {
 }
 
 // print hidden values of the minefield.
-void print_gameplay_minefield(int (*minefield)[SIZE]) {
-    // TODO: add variables (pre-processor directives?) here too cryptic
+void print_gameplay_minefield(int (*minefield)[SIZE], int game_lost) {
     char* header_row = "    00 01 02 03 04 05 06 07";
-    char* horizontal_border = "   -------------------------";
+    char* horizontal_border = "   --------------------------";
+    char* empty_square = "  ";
     int value;
     int mine_count;
 
@@ -193,14 +193,18 @@ void print_gameplay_minefield(int (*minefield)[SIZE]) {
                 node *head = iterate_sqaure(minefield, row, col);
                 mine_count = list_size(head);
                 if (mine_count == 0) {
-                    printf("   ");
+                    printf("%s", empty_square);
                 } else {
                     printf("0%d ", mine_count);
                 }
             }
+            if (game_lost && value == HIDDEN_MINE) {
+                printf("() ");
+                continue;
+            }
+
             if (value == HIDDEN_SAFE || value == HIDDEN_MINE) {
                 printf("## ");
-    
             }
         }
         printf("|\n");
@@ -347,10 +351,10 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
 
     // player selects mine
     if (row_col_in_list(head, row, col)) {
-        print_debug_minefield(minefield);
         printf("Game over\n");
         printf("xx\n");
         printf("/\\\n");
+        print_gameplay_minefield(minefield, 1);
         exit(0);
     }
 
