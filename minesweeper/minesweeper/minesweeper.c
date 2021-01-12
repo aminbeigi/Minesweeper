@@ -416,15 +416,15 @@ void reveal_radial(int(*minefield)[SIZE], char* input) {
     } RadialDirection;
 
     RadialDirection degree_0 = {-1, 0};
-    RadialDirection degree_45 = {-1, -1};
+    RadialDirection degree_45 = {-1, 1};
     RadialDirection degree_90 = {0, 1};
-    RadialDirection degree_135 = {1, 1};
-    RadialDirection degree_180 = {1, 1};
+    RadialDirection degree_135 = {1, 0};
+    RadialDirection degree_180 = {1, 0};
     RadialDirection degree_225 = {1, 1};
-    RadialDirection degree_270 = {1, 1};
-    RadialDirection degree_315 = {1, 1};
+    RadialDirection degree_270 = {0, -1};
+    RadialDirection degree_315 = {-1, -1};
 
-    RadialDirection radial_directions[] = { degree_0, degree_45 };
+    RadialDirection radial_directions[] = { degree_0, degree_45, degree_90, degree_135, degree_180, degree_225, degree_270, degree_315 };
     size_t array_size = sizeof(radial_directions) / sizeof(RadialDirection);
 
     // TODO: is it better to initialise row and col here?
