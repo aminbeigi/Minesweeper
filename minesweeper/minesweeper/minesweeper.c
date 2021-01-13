@@ -1,7 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-// TODO: if in debug mode say your already there dont change
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -72,10 +70,11 @@ int main(void) {
 
     int i = 0;
     for (i; i < mine_count; ++i) {
-        char input[50];
-        fgets(input, 50, stdin);
+        char input[4];
+        fgets(input, 4, stdin);
         int row = char_to_int(input[0]);
         int col = char_to_int(input[2]);
+        setbuf(stdin, NULL);
         if (!(in_minefield(row, col))) {
             continue;
         }
@@ -97,10 +96,10 @@ int main(void) {
             exit(0);
         }
 
-        // TODO: don't use 55
-        char input[55];
-        fgets(input, 55, stdin);
+        char input[10];
+        fgets(input, 10, stdin);
         int command = char_to_int(input[0]);
+        setbuf(stdin, NULL);
         
         if (hints_remaining == 0 && (command == DETECT_ROW || command == DETECT_COL || command == DETECT_SQUARE)) {
             printf("%s\n", out_of_hints_message);
