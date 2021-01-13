@@ -1,5 +1,5 @@
 <p align="center">
-<img src="images/icon.png"/>
+<img src="media/bomb.png" width="128" height="128"/>
 <br/>
 <h3 align="center">Minesweeper</h3>
 <p align="center">A command line Minesweeper game.</p>
