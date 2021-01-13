@@ -17,7 +17,7 @@
 Minesweeper first reads in the location of the mines, then allows the user to check the number of mines in a location, and ultimately reveal the board until only the mines remain.
 
 ## Example
-![](https://i.imgur.com/MTQf6rN.gif)
+![](https://i.imgur.com/zPjv7xZ.gif)
 
 ## Contributions
 Contributions are always welcome!  
