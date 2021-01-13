@@ -54,7 +54,7 @@ int main(void) {
     char* out_of_hints_message = "Help already used";
 
     initialise_field(minefield);
-    printf("Welcome to mine sweeper!\n");
+    printf("Welcome to Minesweeper!\n");
     printf("How many mines? ");
 
     int mine_count;
@@ -422,9 +422,9 @@ void reveal_radial(int(*minefield)[SIZE], char *input, int *first_input) {
     RadialDirection degree_0 = {-1, 0};
     RadialDirection degree_45 = {-1, 1};
     RadialDirection degree_90 = {0, 1};
-    RadialDirection degree_135 = {1, 0};
+    RadialDirection degree_135 = {1, 1};
     RadialDirection degree_180 = {1, 0};
-    RadialDirection degree_225 = {1, 1};
+    RadialDirection degree_225 = {1, -1};
     RadialDirection degree_270 = {0, -1};
     RadialDirection degree_315 = {-1, -1};
 
