@@ -1,9 +1,6 @@
-
 #define _CRT_SECURE_NO_WARNINGS
 
-// TODO: pair numbered, e.g. 1. 1 1, 2. 3 3
 // TODO: if in debug mode say your already there dont change
-// TODO: invalid input checking
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,7 +57,7 @@ int main(void) {
     int mine_count;
     while (1) {
         scanf("%d", &mine_count);
-        if (mine_count < 0 || mine_count > 64) {
+        if (mine_count <= 0 || mine_count >= 64) {
             printf("Mine count must be greater than 0 and less than 64\n");
             continue;
         }
@@ -129,14 +126,14 @@ int main(void) {
             reveal_square(&minefield, &input, &first_turn);
         }
 
-        if (command == GAMEPLAY_MODE) {
+        if (command == GAMEPLAY_MODE && !(in_gameplay_mode)) {
             in_gameplay_mode = 1;
             printf("Gameplay mode activated\n");
             printf("..\n");
             printf("\\/\n");
         }
 
-        if (command == DEBUG_MODE) {
+        if (command == DEBUG_MODE && in_gameplay_mode) {
             in_gameplay_mode = 0;
             printf("Debug mode activated\n");
         }
@@ -356,7 +353,7 @@ void detect_col(int (*minefield)[SIZE], char* input) {
     printf("There are %d mine(s) in column %d.\n", mine_count, col);
 }
 
-void detect_square(int(*minefield)[SIZE], char* input) {
+void detect_square(int (*minefield)[SIZE], char* input) {
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
 
@@ -367,7 +364,7 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     free(head);
 }
 
-void reveal_square(int(*minefield)[SIZE], char* input, int* first_turn) {
+void reveal_square(int (*minefield)[SIZE], char* input, int* first_turn) {
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
     int size = 3;
@@ -400,7 +397,7 @@ void reveal_square(int(*minefield)[SIZE], char* input, int* first_turn) {
     *first_turn = 0;
 } 
 
-void reveal_radial(int(*minefield)[SIZE], char *input, int *first_input) {
+void reveal_radial(int (*minefield)[SIZE], char *input, int *first_input) {
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
     int size = 3;
@@ -431,7 +428,6 @@ void reveal_radial(int(*minefield)[SIZE], char *input, int *first_input) {
     RadialDirection radial_directions[] = { degree_0, degree_45, degree_90, degree_135, degree_180, degree_225, degree_270, degree_315 };
     size_t array_size = sizeof(radial_directions) / sizeof(RadialDirection);
 
-    // TODO: is it better to initialise row and col here?
     int i = 0;
     for (i; i < array_size; ++i) {
         RadialDirection direction = radial_directions[i];
