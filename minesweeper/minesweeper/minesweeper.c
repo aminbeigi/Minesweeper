@@ -1,5 +1,8 @@
+
 #define _CRT_SECURE_NO_WARNINGS
 
+// TODO: pair numbered, e.g. 1. 1 1, 2. 3 3
+// TODO: if in debug mode say your already there dont change
 // TODO: invalid input checking
 
 #include <stdio.h>
@@ -37,13 +40,13 @@ int char_to_int(char c);
 int in_minefield(int row, int col);
 void append(node **head, int row, int col);
 int list_size(node *head);
-int row_col_in_list(node *head, int row, int col);
+int selected_mine(node *head, int row, int col);
 node* iterate_square(int(*minefield)[SIZE], int row, int col);
-void detect_row(int(*minefield)[SIZE], char* input);
-void detect_col(int(*minefield)[SIZE], char* input);
-void detect_square(int(*minefield)[SIZE], char* input);
-void reveal_square(int(*minefield)[SIZE], char* input);
-void reveal_radial(int(*minefield)[SIZE], char* input);
+void detect_row(int(*minefield)[SIZE], char *input);
+void detect_col(int(*minefield)[SIZE], char *input);
+void detect_square(int(*minefield)[SIZE], char *input);
+void reveal_square(int(*minefield)[SIZE], char *input, int *first_turn);
+void reveal_radial(int(*minefield)[SIZE], char *input, int *first_turn);
 
 int main(void) {
     int minefield[SIZE][SIZE];
@@ -83,6 +86,7 @@ int main(void) {
     }
 
     printf("Game Started\n");
+    int first_turn = 1;
     int in_gameplay_mode = 0;
     // game loop
     while (1) {
@@ -122,7 +126,7 @@ int main(void) {
         }
 
         if (command == REVEAL_SQUARE) {
-            reveal_square(&minefield, &input);
+            reveal_square(&minefield, &input, &first_turn);
         }
 
         if (command == GAMEPLAY_MODE) {
@@ -138,7 +142,7 @@ int main(void) {
         }
 
         if (command == REVEAL_RADIAL) {
-            reveal_radial(&minefield, &input);
+            reveal_radial(&minefield, &input, &first_turn);
         }
     }
     return 0;
@@ -287,7 +291,7 @@ int list_size(node *head) {
     return count;
 }
 
-int row_col_in_list(node *head, int row, int col) {
+int selected_mine(node *head, int row, int col) {
     node *current = head;
     if (current == NULL) {
         return 0;
@@ -363,7 +367,7 @@ void detect_square(int(*minefield)[SIZE], char* input) {
     free(head);
 }
 
-void reveal_square(int(*minefield)[SIZE], char* input) {
+void reveal_square(int(*minefield)[SIZE], char* input, int* first_turn) {
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
     int size = 3;
@@ -371,12 +375,11 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
     node *head = iterate_square(minefield, row, col);
     int mine_count = list_size(head);
 
-    // player selects mine
-    if (row_col_in_list(head, row, col)) {
+    if (selected_mine(head, row, col) && !(*first_turn)) {
         game_over(minefield);
     }
 
-    if (mine_count == 0) {
+    if (mine_count == 0 || *first_turn) {
        row -= 1; // start in first coord in top left square
        col -= 1;
 
@@ -394,14 +397,15 @@ void reveal_square(int(*minefield)[SIZE], char* input) {
         (*(*(minefield + row) + col)) = VISIBLE_SAFE;
     }
     free(head);
+    *first_turn = 0;
 } 
 
-void reveal_radial(int(*minefield)[SIZE], char* input) {
+void reveal_radial(int(*minefield)[SIZE], char *input, int *first_input) {
     int row = char_to_int(input[2]);
     int col = char_to_int(input[4]);
     int size = 3;
 
-    reveal_square(minefield, input);
+    reveal_square(minefield, input, first_input);
     
     node *head = iterate_square(minefield, row, col);
     int mine_count = list_size(head);
